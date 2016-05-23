@@ -1,0 +1,76 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <link rel="stylesheet" type="text/css" href="/public/css/mezunlar.css">
+
+
+    <link href="/public/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/public/css/bootstrap-theme.min.css" rel="stylesheet">
+<script src="http://code.jquery.com/jquery-1.8.0.min.js"></script>
+  <script src="http://192.168.1.105:3000/socket.io/socket.io.js"></script>
+  </head>
+
+  <body >
+
+   
+  <script type="text/javascript">
+            $(document).ready(function(){
+            var socket = io.connect("http://192.168.1.105:3000"); // 3000 portuna connect olduk
+
+
+            document.onkeydown = keyKontrol;
+
+            
+
+            
+            //ekrana basılan tuşun kodunu verir
+            function keyKontrol(key){
+                var keyKod;
+
+                keyKod = key.which;
+                var mesaj = $("#search").val(); // #mesajinput'un value'sini al
+  
+
+                if(keyKod == 13){
+                if (!mesaj){
+                return; // mesaj değişkeninin içi boşsa ya da yoksa işlem yapma
+                }
+                socket.emit('mesajgonder',{ //socket.emit ('mesajgonder') aracılığıyla server.js'de socket.on da bizi bekleyen komutu JSON olarak yolladık.
+                    'mesaj' : mesaj
+                });
+
+                $("#yazismalar").empty();
+                $("#search").val('');
+                jQuery(document).ready(function(){       
+                        var $t = $('.chat-history');
+                        $t.animate({"scrollTop": $('.chat-history')[0].scrollHeight}, 'slow');
+                });
+
+                
+                
+                }
+                
+            }        
+
+
+            socket.on("mesajgitti", function(data){ //Server.js deki socket.emitten mesaj'ı client'imize socket.on(mesajgitti) ile aldık.
+                 $("#yazismalar").empty();
+                $("#yazismalar").append("<div class='gelenmesaj'> <img width='100px' class='img-thumbnail' src='/public/resimler/"+data.kullanici_adi+".jpg'>"+"<div class='isimyeri'>"+data.adi+" "+data.soyadi+" </div></div>"); // aldığımız datayı(mesaj ve nicki) append ile #yazismalar divinin içerisine li olarak ekledik.
+
+
+            });
+           
+            
+            
+        });
+        </script>
+  <div class="ortala1">
+    <div class="giris"> <div id="yazismalar"><center>Kartı Okutunuz ...</center></div></div>
+
+
+  </div>
+
+  </body>
+</html>
